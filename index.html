@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bild bearbeiten und senden</title>
+    <title>Bild hochladen und 8-Eck bearbeiten</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,26 +22,36 @@
             display: block;
         }
 
+        #overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
         input, button {
             margin: 10px;
         }
     </style>
 </head>
 <body>
-    <h1>Bild hochladen und 8-Eck-Ausschnitt senden</h1>
+    <h1>Bild hochladen und 8-Eck bearbeiten</h1>
     <input type="file" id="upload" accept="image/*">
     <div id="canvas-container">
         <canvas id="canvas" width="400" height="400"></canvas>
+        <canvas id="overlay" width="400" height="400"></canvas>
     </div>
     <button id="send-button">Bild senden</button>
 
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <script>
-        // Initialisierung von EmailJS
+        // Initialisiere EmailJS
         (function () {
             try {
                 emailjs.init("hIRsZkp8LV1lJyjLg"); // Benutzer-ID aus EmailJS-Dashboard
-                console.log("EmailJS wurde erfolgreich initialisiert.");
+                console.log("EmailJS erfolgreich initialisiert.");
             } catch (error) {
                 console.error("Fehler bei der Initialisierung von EmailJS:", error);
             }
@@ -49,36 +59,24 @@
 
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
+        const overlay = document.getElementById('overlay');
+        const overlayCtx = overlay.getContext('2d');
         const upload = document.getElementById('upload');
         const sendButton = document.getElementById('send-button');
 
         let image = new Image();
 
-        upload.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    image.src = event.target.result;
-                    image.onload = () => {
-                        drawOctagonCrop();
-                    };
-                };
-                reader.readAsDataURL(file);
-            }
-        });
+        // Zeichne das 8-Eck-Overlay
+        function drawOctagonOverlay() {
+            overlayCtx.clearRect(0, 0, overlay.width, overlay.height);
 
-        function drawOctagonCrop() {
-            // Canvas-Größe anpassen
-            canvas.width = 400;
-            canvas.height = 400;
+            // Zeichne halbtransparente Maske
+            overlayCtx.fillStyle = "rgba(0, 0, 0, 0.5)";
+            overlayCtx.fillRect(0, 0, overlay.width, overlay.height);
 
-            // Hintergrund leeren
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // 8-Eck-Koordinaten berechnen
-            const margin = 40; // Rand des 8-Ecks
-            const size = canvas.width; // Quadratische Canvas-Fläche
+            // Definiere das 8-Eck
+            const margin = 40;
+            const size = overlay.width;
             const octagon = [
                 [margin, 0],
                 [size - margin, 0],
@@ -90,7 +88,73 @@
                 [0, margin],
             ];
 
-            // 8-Eck definieren und schneiden
+            // Schneide das 8-Eck aus
+            overlayCtx.save();
+            overlayCtx.globalCompositeOperation = 'destination-out';
+            overlayCtx.beginPath();
+            overlayCtx.moveTo(octagon[0][0], octagon[0][1]);
+            octagon.forEach(([x, y]) => overlayCtx.lineTo(x, y));
+            overlayCtx.closePath();
+            overlayCtx.fill();
+            overlayCtx.restore();
+
+            // Zeichne den Rand des 8-Ecks
+            overlayCtx.strokeStyle = "white";
+            overlayCtx.lineWidth = 3;
+            overlayCtx.beginPath();
+            overlayCtx.moveTo(octagon[0][0], octagon[0][1]);
+            octagon.forEach(([x, y]) => overlayCtx.lineTo(x, y));
+            overlayCtx.closePath();
+            overlayCtx.stroke();
+        }
+
+        // Lade und zeichne das Bild
+        upload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    image.src = event.target.result;
+                    image.onload = () => {
+                        drawImage();
+                        drawOctagonOverlay();
+                    };
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Zeichne das hochgeladene Bild
+        function drawImage() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Passe das Bild an die Canvas an
+            const ratio = Math.min(canvas.width / image.width, canvas.height / image.height);
+            const x = (canvas.width - image.width * ratio) / 2;
+            const y = (canvas.height - image.height * ratio) / 2;
+            const width = image.width * ratio;
+            const height = image.height * ratio;
+
+            ctx.drawImage(image, x, y, width, height);
+        }
+
+        // Senden des 8-eckigen Ausschnitts
+        sendButton.addEventListener('click', () => {
+            // Bereite den Canvas für den Ausschnitt vor
+            const margin = 40;
+            const size = canvas.width;
+            const octagon = [
+                [margin, 0],
+                [size - margin, 0],
+                [size, margin],
+                [size, size - margin],
+                [size - margin, size],
+                [margin, size],
+                [0, size - margin],
+                [0, margin],
+            ];
+
+            // Schneide das Bild zu
             ctx.save();
             ctx.beginPath();
             ctx.moveTo(octagon[0][0], octagon[0][1]);
@@ -98,16 +162,13 @@
             ctx.closePath();
             ctx.clip();
 
-            // Bild ins 8-Eck zeichnen
-            ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-
+            drawImage(); // Zeichne das Bild innerhalb des Ausschnitts
             ctx.restore();
-        }
 
-        sendButton.addEventListener('click', () => {
+            // Generiere das Base64-Bild
             const dataUrl = canvas.toDataURL("image/png");
-            console.log("Canvas-Daten (Base64):", dataUrl.slice(0, 50) + "...");
 
+            // Sende das Bild via EmailJS
             fetch("https://api.emailjs.com/api/v1.0/email/send", {
                 method: "POST",
                 headers: {
@@ -136,6 +197,9 @@
                 alert("Fehler beim Senden des Bildes. Bitte überprüfe die Konfiguration.");
             });
         });
+
+        // Initiale Zeichenoperation für das Overlay
+        drawOctagonOverlay();
     </script>
 </body>
 </html>
