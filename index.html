@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bild bearbeiten und senden</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+
+        #canvas-container {
+            position: relative;
+            display: inline-block;
+            border: 2px solid #ccc;
+            margin: 20px;
+        }
+
+        #template {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        #canvas {
+            display: block;
+        }
+
+        input, button {
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bild hochladen und bearbeiten</h1>
+    <input type="file" id="upload" accept="image/*">
+    <div id="canvas-container">
+        <canvas id="canvas" width="400" height="400"></canvas>
+        <img id="template" src="octagon.png" alt="Vorlage (8-Eck)">
+    </div>
+    <button id="send-button">Bild senden</button>
+
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <script>
+        (function () {
+            emailjs.init("DEINE_BENUTZER_ID"); // Benutzer-ID aus EmailJS-Dashboard
+        })();
+
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const upload = document.getElementById('upload');
+        const sendButton = document.getElementById('send-button');
+        const template = document.getElementById('template');
+
+        let image = new Image();
+        let scale = 1;
+        let posX = 0, posY = 0;
+        let dragging = false;
+        let startX, startY;
+
+        upload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    image.src = event.target.result;
+                    image.onload = () => {
+                        draw();
+                    };
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        canvas.addEventListener('mousedown', (e) => {
+            dragging = true;
+            startX = e.offsetX - posX;
+            startY = e.offsetY - posY;
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (dragging) {
+                posX = e.offsetX - startX;
+                posY = e.offsetY - startY;
+                draw();
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => dragging = false);
+        canvas.addEventListener('mouseleave', () => dragging = false);
+
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            scale += e.deltaY * -0.001;
+            scale = Math.min(Math.max(0.5, scale), 3); // Limit Zoom
+            draw();
+        });
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save();
+            ctx.translate(posX, posY);
+            ctx.scale(scale, scale);
+            if (image) ctx.drawImage(image, 0, 0);
+            ctx.restore();
+            ctx.drawImage(template, 0, 0, canvas.width, canvas.height);
+        }
+
+        sendButton.addEventListener('click', () => {
+            const dataUrl = canvas.toDataURL();
+            emailjs.send("service_photoLeinwand", "template_photoLeinwand", {
+                to_email: "deine.ziel.email@gmail.com",
+                attachment: dataUrl,
+            })
+            .then(() => alert("Bild erfolgreich gesendet!"))
+            .catch(() => alert("Fehler beim Senden des Bildes."));
+        });
+    </script>
+</body>
+</html>
