@@ -155,9 +155,9 @@ sendButton.addEventListener('click', () => {
             template_id: "template_photoLeinwand",
             user_id: "hIRsZkp8LV1lJyjLg",
             template_params: {
-                to_email: "zapfel92@gmail.com",
-                from_contact: contactInfo,
-                attachment: dataUrl,
+                to_email: "zapfel92@gmail.com", // Ziel-E-Mail
+                from_contact: contactInfo,      // Kontaktinfo des Benutzers
+                attachment: dataUrl,           // Bilddaten
             },
         }),
     })
