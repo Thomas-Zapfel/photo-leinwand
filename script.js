@@ -85,6 +85,7 @@ function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     ctx.save();
+
     if (shape === 'octagon') {
         // Achteck-Clip definieren
         ctx.beginPath();
@@ -97,7 +98,10 @@ function draw() {
         ctx.lineTo(0, canvas.height * 0.75);
         ctx.lineTo(0, canvas.height * 0.25);
         ctx.closePath();
-        ctx.clip();
+        ctx.clip(); // Clip im Achteck
+
+        // Achteck-Vorlage zeichnen
+        ctx.drawImage(template, 0, 0, canvas.width, canvas.height);
     }
 
     // Bild zeichnen
@@ -108,11 +112,6 @@ function draw() {
         ctx.drawImage(image, 0, 0);
     }
     ctx.restore();
-
-    // Vorlage (Achteck) zeichnen, um zu visualisieren, wo der Clip angewendet wird
-    if (shape === 'octagon') {
-        ctx.drawImage(template, 0, 0, canvas.width, canvas.height);
-    }
 
     ctx.restore();
 }
