@@ -114,7 +114,7 @@
         sendButton.addEventListener('click', () => {
             const dataUrl = canvas.toDataURL();
             emailjs.send("service_photoLeinwand", "template_photoLeinwand", {
-                to_email: "deine.ziel.email@gmail.com",
+                to_email: "zapfel92@gmail.com",
                 attachment: dataUrl,
             })
             .then(() => alert("Bild erfolgreich gesendet!"))
