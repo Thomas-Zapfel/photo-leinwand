@@ -4,23 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bild bearbeiten und senden</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <h1>Bild hochladen und bearbeiten</h1>
-
-    <!-- Auswahl für die Form des Rahmens -->
-    <div>
-        <button id="rectangle-btn">Rechteckig</button>
-        <button id="octagon-btn">Achteckig</button>
+    <div class="form-controls">
+        <input type="file" id="upload" accept="image/*">
+        <div>
+            <button id="octagon-btn">Achteck</button>
+            <button id="rectangle-btn">Rechteck</button>
+        </div>
+        <input type="text" id="contact-info" placeholder="E-Mail oder Telefonnummer">
+        <button id="send-button">Bild senden</button>
     </div>
-
-    <input type="file" id="upload" accept="image/*">
-    <div id="canvas-container">
-        <canvas id="canvas" width="400" height="400"></canvas>
-    </div>
-    <button id="send-button">Bild senden</button>
-
+    <canvas id="canvas" width="400" height="400"></canvas>
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <script src="script.js"></script>
 </body>
