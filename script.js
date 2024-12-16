@@ -11,6 +11,7 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const upload = document.getElementById('upload');
 const sendButton = document.getElementById('send-button');
+const shapeInputs = document.querySelectorAll('input[name="shape"]');
 let image = new Image();
 let scale = 1;
 let posX = 0, posY = 0;
@@ -24,23 +25,24 @@ const lastNameInput = document.getElementById('last-name');
 const emailInput = document.getElementById('email');
 const phoneInput = document.getElementById('phone');
 
+// Shape-Auswahl (Rechteck oder Achteck)
+shapeInputs.forEach(input => {
+    input.addEventListener('change', (e) => {
+        shape = e.target.value;
+        draw(); // Canvas neu zeichnen
+    });
+});
+
 // Hochladen eines Bildes
 upload.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
-        console.log("Bild hochgeladen:", file.name);
         const reader = new FileReader();
         reader.onload = (event) => {
             image.src = event.target.result;
-            console.log("Bild erfolgreich geladen.");
-            image.onload = () => {
-                console.log("Bild vollständig geladen. Start des Zeichnens.");
-                draw(); // Canvas neu zeichnen
-            };
+            image.onload = () => draw(); // Bild laden und zeichnen
         };
         reader.readAsDataURL(file);
-    } else {
-        console.warn("Kein Bild hochgeladen.");
     }
 });
 
@@ -73,6 +75,13 @@ function draw() {
     }
 
     ctx.restore();
+
+    if (shape === 'rectangle') {
+        // Rahmen für Rechteck anzeigen
+        ctx.strokeStyle = "#ccc";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(0, 0, canvas.width, canvas.height);
+    }
 }
 
 // Validierung der Formulareingaben
@@ -142,7 +151,6 @@ sendButton.addEventListener('click', () => {
     })
         .then(response => {
             if (response.ok) {
-                console.log("E-Mail erfolgreich gesendet.");
                 alert("Bild erfolgreich gesendet!");
             } else {
                 throw new Error(`HTTP-Fehler: ${response.status}`);
