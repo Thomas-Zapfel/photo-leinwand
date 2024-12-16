@@ -18,17 +18,10 @@
             margin: 20px;
         }
 
-        #canvas {
+        #canvas, #overlay {
             display: block;
-        }
-
-        #overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
+            width: 400px;
+            height: 400px;
         }
 
         input, button {
@@ -45,18 +38,7 @@
     </div>
     <button id="send-button">Bild senden</button>
 
-    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <script>
-        // Initialisiere EmailJS
-        (function () {
-            try {
-                emailjs.init("hIRsZkp8LV1lJyjLg"); // Benutzer-ID aus EmailJS-Dashboard
-                console.log("EmailJS erfolgreich initialisiert.");
-            } catch (error) {
-                console.error("Fehler bei der Initialisierung von EmailJS:", error);
-            }
-        })();
-
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         const overlay = document.getElementById('overlay');
@@ -65,16 +47,14 @@
         const sendButton = document.getElementById('send-button');
 
         let image = new Image();
+        let scale = 1;
+        let posX = 0, posY = 0;
+        let dragging = false;
+        let startX, startY;
 
-        // Zeichne das 8-Eck-Overlay
         function drawOctagonOverlay() {
             overlayCtx.clearRect(0, 0, overlay.width, overlay.height);
 
-            // Zeichne halbtransparente Maske
-            overlayCtx.fillStyle = "rgba(0, 0, 0, 0.5)";
-            overlayCtx.fillRect(0, 0, overlay.width, overlay.height);
-
-            // Definiere das 8-Eck
             const margin = 40;
             const size = overlay.width;
             const octagon = [
@@ -88,7 +68,9 @@
                 [0, margin],
             ];
 
-            // Schneide das 8-Eck aus
+            overlayCtx.fillStyle = "rgba(0, 0, 0, 0.5)";
+            overlayCtx.fillRect(0, 0, overlay.width, overlay.height);
+
             overlayCtx.save();
             overlayCtx.globalCompositeOperation = 'destination-out';
             overlayCtx.beginPath();
@@ -98,7 +80,6 @@
             overlayCtx.fill();
             overlayCtx.restore();
 
-            // Zeichne den Rand des 8-Ecks
             overlayCtx.strokeStyle = "white";
             overlayCtx.lineWidth = 3;
             overlayCtx.beginPath();
@@ -108,7 +89,15 @@
             overlayCtx.stroke();
         }
 
-        // Lade und zeichne das Bild
+        function drawImage() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save();
+            ctx.translate(posX, posY);
+            ctx.scale(scale, scale);
+            ctx.drawImage(image, 0, 0);
+            ctx.restore();
+        }
+
         upload.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -116,6 +105,9 @@
                 reader.onload = (event) => {
                     image.src = event.target.result;
                     image.onload = () => {
+                        scale = 1;
+                        posX = 0;
+                        posY = 0;
                         drawImage();
                         drawOctagonOverlay();
                     };
@@ -124,23 +116,35 @@
             }
         });
 
-        // Zeichne das hochgeladene Bild
-        function drawImage() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.addEventListener('mousedown', (e) => {
+            dragging = true;
+            startX = e.offsetX - posX;
+            startY = e.offsetY - posY;
+        });
 
-            // Passe das Bild an die Canvas an
-            const ratio = Math.min(canvas.width / image.width, canvas.height / image.height);
-            const x = (canvas.width - image.width * ratio) / 2;
-            const y = (canvas.height - image.height * ratio) / 2;
-            const width = image.width * ratio;
-            const height = image.height * ratio;
+        canvas.addEventListener('mousemove', (e) => {
+            if (dragging) {
+                posX = e.offsetX - startX;
+                posY = e.offsetY - startY;
+                drawImage();
+                drawOctagonOverlay();
+            }
+        });
 
-            ctx.drawImage(image, x, y, width, height);
-        }
+        canvas.addEventListener('mouseup', () => dragging = false);
+        canvas.addEventListener('mouseleave', () => dragging = false);
 
-        // Senden des 8-eckigen Ausschnitts
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            scale += e.deltaY * -0.001;
+            scale = Math.min(Math.max(0.5, scale), 3);
+            drawImage();
+            drawOctagonOverlay();
+        });
+
         sendButton.addEventListener('click', () => {
-            // Bereite den Canvas für den Ausschnitt vor
+            ctx.save();
+
             const margin = 40;
             const size = canvas.width;
             const octagon = [
@@ -154,21 +158,24 @@
                 [0, margin],
             ];
 
-            // Schneide das Bild zu
-            ctx.save();
             ctx.beginPath();
             ctx.moveTo(octagon[0][0], octagon[0][1]);
             octagon.forEach(([x, y]) => ctx.lineTo(x, y));
             ctx.closePath();
             ctx.clip();
 
-            drawImage(); // Zeichne das Bild innerhalb des Ausschnitts
+            drawImage();
             ctx.restore();
 
-            // Generiere das Base64-Bild
-            const dataUrl = canvas.toDataURL("image/png");
+            const resizedCanvas = document.createElement('canvas');
+            resizedCanvas.width = 800;
+            resizedCanvas.height = 800;
 
-            // Sende das Bild via EmailJS
+            const resizedCtx = resizedCanvas.getContext('2d');
+            resizedCtx.drawImage(canvas, 0, 0, 800, 800);
+
+            const dataUrl = resizedCanvas.toDataURL("image/jpeg", 0.7);
+
             fetch("https://api.emailjs.com/api/v1.0/email/send", {
                 method: "POST",
                 headers: {
@@ -186,7 +193,6 @@
             })
             .then(response => {
                 if (response.ok) {
-                    console.log("E-Mail erfolgreich gesendet.");
                     alert("Bild erfolgreich gesendet!");
                 } else {
                     throw new Error(`HTTP-Fehler: ${response.status}`);
@@ -198,7 +204,6 @@
             });
         });
 
-        // Initiale Zeichenoperation für das Overlay
         drawOctagonOverlay();
     </script>
 </body>
