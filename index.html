@@ -123,38 +123,38 @@
             ctx.drawImage(template, 0, 0, canvas.width, canvas.height);
         }
 
-        sendButton.addEventListener('click', () => {
-            const dataUrl = canvas.toDataURL();
-            console.log("Canvas-Daten (Base64):", dataUrl.slice(0, 50) + "..."); // Ausgabe eines Teils der Daten
+sendButton.addEventListener('click', () => {
+    const dataUrl = canvas.toDataURL("image/jpeg", 0.7); // Reduziert die Qualität des Bildes
+    console.log("Canvas-Daten (Base64):", dataUrl.slice(0, 50) + "..."); // Ausgabe eines Teils der Daten
 
-            fetch("https://api.emailjs.com/api/v1.0/email/send", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    service_id: "service_photoLeinwand",
-                    template_id: "template_photoLeinwand",
-                    user_id: "hIRsZkp8LV1lJyjLg",
-                    template_params: {
-                        to_email: "zapfel92@gmail.com",
-                        attachment: dataUrl,
-                    },
-                }),
-            })
-            .then(response => {
-                if (response.ok) {
-                    console.log("E-Mail erfolgreich gesendet.");
-                    alert("Bild erfolgreich gesendet!");
-                } else {
-                    throw new Error(`HTTP-Fehler: ${response.status}`);
-                }
-            })
-            .catch(error => {
-                console.error("Fehler beim Senden der E-Mail:", error);
-                alert("Fehler beim Senden des Bildes. Bitte überprüfe die Konfiguration.");
-            });
-        });
+    fetch("https://api.emailjs.com/api/v1.0/email/send", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            service_id: "service_photoLeinwand",
+            template_id: "template_photoLeinwand",
+            user_id: "DEINE_BENUTZER_ID",
+            template_params: {
+                to_email: "zapfel92@gmail.com",
+                attachment: dataUrl,
+            },
+        }),
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log("E-Mail erfolgreich gesendet.");
+            alert("Bild erfolgreich gesendet!");
+        } else {
+            throw new Error(`HTTP-Fehler: ${response.status}`);
+        }
+    })
+    .catch(error => {
+        console.error("Fehler beim Senden der E-Mail:", error);
+        alert("Fehler beim Senden des Bildes. Bitte überprüfe die Konfiguration.");
+    });
+});
     </script>
 </body>
 </html>
