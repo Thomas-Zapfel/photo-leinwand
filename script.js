@@ -7,34 +7,34 @@
     }
 })();
 
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-const upload = document.getElementById('upload');
-const sendButton = document.getElementById('send-button');
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const upload = document.getElementById("upload");
+const sendButton = document.getElementById("send-button");
 const shapeInputs = document.querySelectorAll('input[name="shape"]');
 let image = new Image();
 let scale = 1;
 let posX = 0, posY = 0;
 let dragging = false;
 let startX, startY;
-let shape = 'octagon'; // Standard: Achteck
+let shape = "octagon"; // Standard: Achteck
 
 // Formularelemente
-const firstNameInput = document.getElementById('first-name');
-const lastNameInput = document.getElementById('last-name');
-const emailInput = document.getElementById('email');
-const phoneInput = document.getElementById('phone');
+const firstNameInput = document.getElementById("first-name");
+const lastNameInput = document.getElementById("last-name");
+const emailInput = document.getElementById("email");
+const phoneInput = document.getElementById("phone");
 
 // Shape-Auswahl (Rechteck oder Achteck)
 shapeInputs.forEach(input => {
-    input.addEventListener('change', (e) => {
+    input.addEventListener("change", (e) => {
         shape = e.target.value;
         draw(); // Canvas neu zeichnen
     });
 });
 
 // Hochladen eines Bildes
-upload.addEventListener('change', (e) => {
+upload.addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (file) {
         const reader = new FileReader();
@@ -46,13 +46,37 @@ upload.addEventListener('change', (e) => {
     }
 });
 
+// Zoom- und Drag-Funktionalität
+canvas.addEventListener("mousedown", (e) => {
+    dragging = true;
+    startX = e.offsetX - posX;
+    startY = e.offsetY - posY;
+});
+
+canvas.addEventListener("mousemove", (e) => {
+    if (dragging) {
+        posX = e.offsetX - startX;
+        posY = e.offsetY - startY;
+        draw();
+    }
+});
+
+canvas.addEventListener("mouseup", () => dragging = false);
+canvas.addEventListener("mouseleave", () => dragging = false);
+
+canvas.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    scale += e.deltaY * -0.001;
+    scale = Math.min(Math.max(0.5, scale), 3); // Limit Zoom
+    draw();
+});
+
 // Funktion zum Zeichnen des Bildes
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     ctx.save();
 
-    if (shape === 'octagon') {
+    if (shape === "octagon") {
         // Achteck-Clip definieren
         ctx.beginPath();
         ctx.moveTo(canvas.width * 0.25, 0);
@@ -76,8 +100,8 @@ function draw() {
 
     ctx.restore();
 
-    if (shape === 'rectangle') {
-        // Rahmen für Rechteck anzeigen
+    // Rahmen für Rechteck
+    if (shape === "rectangle") {
         ctx.strokeStyle = "#ccc";
         ctx.lineWidth = 2;
         ctx.strokeRect(0, 0, canvas.width, canvas.height);
@@ -118,7 +142,7 @@ function validateForm() {
 }
 
 // Bild senden
-sendButton.addEventListener('click', () => {
+sendButton.addEventListener("click", () => {
     if (!image.src) {
         alert("Bitte lade ein Bild hoch, bevor du es sendest.");
         return;
