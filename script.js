@@ -135,34 +135,45 @@ function validateForm() {
 }
 
 // Bild senden
-sendButton.addEventListener('click', () => {
-    // Canvas in Blob umwandeln
-    canvas.toBlob(blob => {
-        if (blob) {
-            // Erstellen einer neuen FormData-Instanz für den Upload
-            const formData = new FormData();
-            formData.append("file", blob, "canvas-image.jpg");  // Bild als Datei hinzufügen
+sendButton.addEventListener("click", () => {
+    if (!image.src) {
+        alert("Bitte lade ein Bild hoch, bevor du es sendest.");
+        return;
+    }
 
-            // E-Mail mit Anhang senden
-            fetch("https://api.emailjs.com/api/v1.0/email/send-form", {
-                method: "POST",
-                body: formData,
-            })
-            .then(response => {
-                if (response.ok) {
-                    console.log("E-Mail erfolgreich gesendet.");
-                    alert("Bild erfolgreich gesendet!");
-                } else {
-                    throw new Error(`HTTP-Fehler: ${response.status}`);
-                }
-            })
-            .catch(error => {
-                console.error("Fehler beim Senden der E-Mail:", error);
-                alert("Fehler beim Senden des Bildes. Bitte überprüfe die Konfiguration.");
-            });
-        } else {
-            console.error("Fehler: Blob konnte nicht erstellt werden.");
-            alert("Es gab ein Problem beim Erstellen der Bilddatei.");
-        }
-    }, "image/jpeg", 0.7);  // Format und Qualität angeben (z.B. 0.7 für 70% Qualität)
+    if (!validateForm()) {
+        return; // Abbrechen, wenn die Validierung fehlschlägt
+    }
+
+    const dataUrl = canvas.toDataURL("image/jpeg", 0.7); // Reduziert die Qualität des Bildes
+
+    fetch("https://api.emailjs.com/api/v1.0/email/send", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            service_id: "service_photoLeinwand",
+            template_id: "template_photoLeinwand",
+            user_id: "hIRsZkp8LV1lJyjLg",
+            template_params: {
+                first_name: firstNameInput.value.trim() || "", // Optional
+                last_name: lastNameInput.value.trim() || "", // Optional
+                email: emailInput.value.trim(),
+                phone: phoneInput.value.trim(),
+                attachment: dataUrl,
+            },
+        }),
+    })
+        .then(response => {
+            if (response.ok) {
+                alert("Bild erfolgreich gesendet!");
+            } else {
+                throw new Error(`HTTP-Fehler: ${response.status}`);
+            }
+        })
+        .catch(error => {
+            console.error("Fehler beim Senden der E-Mail:", error);
+            alert("Fehler beim Senden des Bildes. Bitte überprüfe die Konfiguration.");
+        });
 });
