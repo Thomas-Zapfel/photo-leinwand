@@ -121,6 +121,14 @@ function draw() {
     ctx.restore();
 }
 
+// Funktion zur Validierung von E-Mail und Telefonnummer
+function isValidContactInfo(contactInfo) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // E-Mail-Format
+    const phoneRegex = /^\d{8,}$/; // Mindestens 8 Ziffern, nur Zahlen
+
+    return emailRegex.test(contactInfo) || phoneRegex.test(contactInfo);
+}
+
 // Bild senden
 sendButton.addEventListener('click', () => {
     if (!image.src) {
@@ -129,8 +137,8 @@ sendButton.addEventListener('click', () => {
     }
 
     const contactInfo = contactInfoInput.value.trim();
-    if (!contactInfo) {
-        alert("Bitte gib eine E-Mail-Adresse oder Telefonnummer ein.");
+    if (!isValidContactInfo(contactInfo)) {
+        alert("Bitte gib eine gültige E-Mail-Adresse oder Telefonnummer ein.");
         return;
     }
 
