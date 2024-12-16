@@ -128,16 +128,39 @@
             draw();
         });
 
-        function draw() {
-            console.log("Zeichne Bild mit Position:", { posX, posY, scale });
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.save();
-            ctx.translate(posX, posY);
-            ctx.scale(scale, scale);
-            if (image) ctx.drawImage(image, 0, 0);
-            ctx.restore();
-            ctx.drawImage(template, 0, 0, canvas.width, canvas.height);
-        }
+       function draw() {
+    console.log("Zeichne Bild mit Position:", { posX, posY, scale });
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Achteck-Clip definieren
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(canvas.width * 0.25, 0); // Startpunkt oben links
+    ctx.lineTo(canvas.width * 0.75, 0); // Punkt oben rechts
+    ctx.lineTo(canvas.width, canvas.height * 0.25); // Punkt rechts unten
+    ctx.lineTo(canvas.width, canvas.height * 0.75); // Punkt unten rechts
+    ctx.lineTo(canvas.width * 0.75, canvas.height); // Punkt unten links
+    ctx.lineTo(canvas.width * 0.25, canvas.height); // Punkt links unten
+    ctx.lineTo(0, canvas.height * 0.75); // Punkt links oben
+    ctx.lineTo(0, canvas.height * 0.25); // Punkt oben links
+    ctx.closePath();
+    ctx.clip(); // Den Bereich im Achteck zuschneiden
+
+    // Bild zeichnen
+    ctx.save();
+    ctx.translate(posX, posY);
+    ctx.scale(scale, scale);
+    if (image) {
+        ctx.drawImage(image, 0, 0);
+    }
+    ctx.restore();
+    
+    // Vorlage (Achteck) zeichnen, um zu visualisieren, wo der Clip angewendet wird
+    ctx.drawImage(template, 0, 0, canvas.width, canvas.height);
+
+    ctx.restore();
+}
+
 
 sendButton.addEventListener('click', () => {
     const dataUrl = canvas.toDataURL("image/jpeg", 0.7); // Reduziert die Qualität des Bildes
