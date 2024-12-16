@@ -49,7 +49,7 @@
     <script>
         (function () {
             try {
-                emailjs.init("hIRsZkp8LV1lJyjLg"); // Benutzer-ID aus EmailJS-Dashboard
+                emailjs.init("hIRsZkp8LV1lJyjLg"); // Benutzer-ID aus EmailJS-Dashboard bzw. Public Key
                 console.log("EmailJS wurde erfolgreich initialisiert.");
             } catch (error) {
                 console.error("Fehler bei der Initialisierung von EmailJS:", error);
@@ -125,7 +125,7 @@
 
         sendButton.addEventListener('click', () => {
             const dataUrl = canvas.toDataURL();
-            console.log("Canvas-Daten (Base64):", dataUrl.slice(0, 50) + "..."); // Ausgabe eines Teils der Daten
+            console.log("Test Canvas-Daten (Base64):", dataUrl.slice(0, 50) + "..."); // Ausgabe eines Teils der Daten
 
             emailjs.send("service_photoLeinwand", "template_photoLeinwand", {
                 to_email: "zapfel92@gmail.com",
