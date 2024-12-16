@@ -20,15 +20,23 @@ let shape = 'octagon'; // Standard: Achteck
 
 // Buttons für die Auswahl der Form
 document.getElementById('rectangle-btn').addEventListener('click', () => {
-    shape = 'rectangle'; // Rechteck
-    console.log("Rechteckige Form ausgewählt.");
-    draw(); // Canvas neu zeichnen, um den Rahmen anzuzeigen
+    if (image.src) {
+        shape = 'rectangle'; // Rechteck
+        console.log("Rechteckige Form ausgewählt.");
+        draw(); // Canvas neu zeichnen, um den Rahmen anzuzeigen
+    } else {
+        alert("Bitte lade zuerst ein Bild hoch!");
+    }
 });
 
 document.getElementById('octagon-btn').addEventListener('click', () => {
-    shape = 'octagon'; // Achteck
-    console.log("Achteckige Form ausgewählt.");
-    draw(); // Canvas neu zeichnen, um das Achteck darzustellen
+    if (image.src) {
+        shape = 'octagon'; // Achteck
+        console.log("Achteckige Form ausgewählt.");
+        draw(); // Canvas neu zeichnen, um das Achteck darzustellen
+    } else {
+        alert("Bitte lade zuerst ein Bild hoch!");
+    }
 });
 
 // Hochladen eines Bildes
@@ -42,7 +50,7 @@ upload.addEventListener('change', (e) => {
             console.log("Bild erfolgreich geladen.");
             image.onload = () => {
                 console.log("Bild vollständig geladen. Start des Zeichnens.");
-                draw();
+                draw(); // Canvas neu zeichnen, wenn das Bild geladen ist
             };
         };
         reader.readAsDataURL(file);
@@ -122,6 +130,10 @@ function draw() {
 
 // Bild senden
 sendButton.addEventListener('click', () => {
+    if (!image.src) {
+        alert("Bitte lade ein Bild hoch, bevor du es sendest.");
+        return;
+    }
     const dataUrl = canvas.toDataURL("image/jpeg", 0.7); // Reduziert die Qualität des Bildes
     console.log("Canvas-Daten (Base64):", dataUrl.slice(0, 50) + "..."); // Ausgabe eines Teils der Daten
 
