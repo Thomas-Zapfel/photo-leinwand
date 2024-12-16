@@ -110,21 +110,14 @@ function draw() {
 
 // Validierung der Formulareingaben
 function validateForm() {
-    const firstName = firstNameInput.value.trim();
-    const lastName = lastNameInput.value.trim();
     const email = emailInput.value.trim();
     const phone = phoneInput.value.trim();
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^\d{8,}$/;
 
-    if (!firstName || !lastName) {
-        alert("Bitte Vorname und Nachname eingeben.");
-        return false;
-    }
-
     if (!email && !phone) {
-        alert("Bitte entweder eine E-Mail-Adresse oder Telefonnummer eingeben.");
+        alert("Bitte entweder eine gültige E-Mail-Adresse oder Telefonnummer eingeben.");
         return false;
     }
 
@@ -164,9 +157,8 @@ sendButton.addEventListener("click", () => {
             template_id: "template_photoLeinwand",
             user_id: "hIRsZkp8LV1lJyjLg",
             template_params: {
-                to_email: "zapfel92@gmail.com",
-                first_name: firstNameInput.value.trim(),
-                last_name: lastNameInput.value.trim(),
+                first_name: firstNameInput.value.trim() || "", // Optional
+                last_name: lastNameInput.value.trim() || "", // Optional
                 email: emailInput.value.trim(),
                 phone: phoneInput.value.trim(),
                 attachment: dataUrl,
