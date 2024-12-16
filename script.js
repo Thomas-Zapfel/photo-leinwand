@@ -11,6 +11,7 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const upload = document.getElementById('upload');
 const sendButton = document.getElementById('send-button');
+const contactInfoInput = document.getElementById('contact-info');
 let image = new Image();
 let scale = 1;
 let posX = 0, posY = 0;
@@ -23,7 +24,7 @@ document.getElementById('rectangle-btn').addEventListener('click', () => {
     if (image.src) {
         shape = 'rectangle'; // Rechteck
         console.log("Rechteckige Form ausgewählt.");
-        draw(); // Canvas neu zeichnen, um den Rahmen anzuzeigen
+        draw(); // Canvas neu zeichnen
     } else {
         alert("Bitte lade zuerst ein Bild hoch!");
     }
@@ -33,7 +34,7 @@ document.getElementById('octagon-btn').addEventListener('click', () => {
     if (image.src) {
         shape = 'octagon'; // Achteck
         console.log("Achteckige Form ausgewählt.");
-        draw(); // Canvas neu zeichnen, um das Achteck darzustellen
+        draw(); // Canvas neu zeichnen
     } else {
         alert("Bitte lade zuerst ein Bild hoch!");
     }
@@ -117,14 +118,6 @@ function draw() {
     }
     ctx.restore();
 
-    // Rechteckigen Rahmen hinzufügen, wenn die Form 'rectangle' gewählt ist
-    if (shape === 'rectangle') {
-        ctx.lineWidth = 4;
-        ctx.strokeStyle = 'black';
-        ctx.setLineDash([6, 4]); // Linienart für den Rechteck-Rahmen (gestrichelt)
-        ctx.strokeRect(0, 0, canvas.width, canvas.height); // Rechteck zeichnen
-    }
-
     ctx.restore();
 }
 
@@ -134,6 +127,13 @@ sendButton.addEventListener('click', () => {
         alert("Bitte lade ein Bild hoch, bevor du es sendest.");
         return;
     }
+
+    const contactInfo = contactInfoInput.value.trim();
+    if (!contactInfo) {
+        alert("Bitte gib eine E-Mail-Adresse oder Telefonnummer ein.");
+        return;
+    }
+
     const dataUrl = canvas.toDataURL("image/jpeg", 0.7); // Reduziert die Qualität des Bildes
     console.log("Canvas-Daten (Base64):", dataUrl.slice(0, 50) + "..."); // Ausgabe eines Teils der Daten
 
@@ -148,6 +148,7 @@ sendButton.addEventListener('click', () => {
             user_id: "hIRsZkp8LV1lJyjLg",
             template_params: {
                 to_email: "zapfel92@gmail.com",
+                from_contact: contactInfo,
                 attachment: dataUrl,
             },
         }),
