@@ -48,7 +48,12 @@
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <script>
         (function () {
-            emailjs.init("hIRsZkp8LV1lJyjLg"); // Benutzer-ID aus EmailJS-Dashboard
+            try {
+                emailjs.init("DEINE_BENUTZER_ID"); // Benutzer-ID aus EmailJS-Dashboard
+                console.log("EmailJS wurde erfolgreich initialisiert.");
+            } catch (error) {
+                console.error("Fehler bei der Initialisierung von EmailJS:", error);
+            }
         })();
 
         const canvas = document.getElementById('canvas');
@@ -66,14 +71,19 @@
         upload.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
+                console.log("Bild hochgeladen:", file.name);
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     image.src = event.target.result;
+                    console.log("Bild erfolgreich geladen.");
                     image.onload = () => {
+                        console.log("Bild vollständig geladen. Start des Zeichnens.");
                         draw();
                     };
                 };
                 reader.readAsDataURL(file);
+            } else {
+                console.warn("Kein Bild hochgeladen.");
             }
         });
 
@@ -98,10 +108,12 @@
             e.preventDefault();
             scale += e.deltaY * -0.001;
             scale = Math.min(Math.max(0.5, scale), 3); // Limit Zoom
+            console.log("Zoom-Level:", scale);
             draw();
         });
 
         function draw() {
+            console.log("Zeichne Bild mit Position:", { posX, posY, scale });
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.save();
             ctx.translate(posX, posY);
@@ -113,12 +125,20 @@
 
         sendButton.addEventListener('click', () => {
             const dataUrl = canvas.toDataURL();
+            console.log("Canvas-Daten (Base64):", dataUrl.slice(0, 50) + "..."); // Ausgabe eines Teils der Daten
+
             emailjs.send("service_photoLeinwand", "template_photoLeinwand", {
                 to_email: "zapfel92@gmail.com",
                 attachment: dataUrl,
             })
-            .then(() => alert("Bild erfolgreich gesendet!"))
-            .catch(() => alert("Fehler beim Senden des Bildes."));
+            .then(() => {
+                console.log("E-Mail erfolgreich gesendet.");
+                alert("Bild erfolgreich gesendet!");
+            })
+            .catch((error) => {
+                console.error("Fehler beim Senden der E-Mail:", error);
+                alert("Fehler beim Senden des Bildes. Bitte überprüfe die Konfiguration.");
+            });
         });
     </script>
 </body>
