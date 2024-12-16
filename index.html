@@ -8,7 +8,27 @@
 </head>
 <body>
     <h1>Bild hochladen und bearbeiten</h1>
-   <div id="form-container">
+   <div id="shape-container">
+    <label>
+        <input type="radio" name="shape" value="octagon" checked>
+        Achteck
+    </label>
+    <label>
+        <input type="radio" name="shape" value="rectangle">
+        Rechteck
+    </label>
+</div>
+
+<div id="upload-container">
+    <label for="upload">Bild hochladen:</label>
+    <input type="file" id="upload" accept="image/*">
+</div>
+
+<div id="canvas-container">
+    <canvas id="canvas" width="400" height="400"></canvas>
+</div>
+
+<div id="form-container">
     <label for="first-name">Vorname:</label>
     <input type="text" id="first-name" placeholder="Vorname" required>
 
