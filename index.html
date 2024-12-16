@@ -49,7 +49,7 @@
     <script>
         (function () {
             try {
-                emailjs.init("hIRsZkp8LV1lJyjLg"); // Benutzer-ID aus EmailJS-Dashboard bzw. Public Key
+                emailjs.init("hIRsZkp8LV1lJyjLg"); // Benutzer-ID aus EmailJS-Dashboard
                 console.log("EmailJS wurde erfolgreich initialisiert.");
             } catch (error) {
                 console.error("Fehler bei der Initialisierung von EmailJS:", error);
@@ -125,17 +125,32 @@
 
         sendButton.addEventListener('click', () => {
             const dataUrl = canvas.toDataURL();
-            console.log("Test Canvas-Daten (Base64):", dataUrl.slice(0, 50) + "..."); // Ausgabe eines Teils der Daten
+            console.log("Canvas-Daten (Base64):", dataUrl.slice(0, 50) + "..."); // Ausgabe eines Teils der Daten
 
-            emailjs.send("service_photoLeinwand", "template_photoLeinwand", {
-                to_email: "zapfel92@gmail.com",
-                attachment: dataUrl,
+            fetch("https://api.emailjs.com/api/v1.0/email/send", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    service_id: "service_photoLeinwand",
+                    template_id: "template_photoLeinwand",
+                    user_id: "hIRsZkp8LV1lJyjLg",
+                    template_params: {
+                        to_email: "zapfel92@gmail.com",
+                        attachment: dataUrl,
+                    },
+                }),
             })
-            .then(() => {
-                console.log("E-Mail erfolgreich gesendet.");
-                alert("Bild erfolgreich gesendet!");
+            .then(response => {
+                if (response.ok) {
+                    console.log("E-Mail erfolgreich gesendet.");
+                    alert("Bild erfolgreich gesendet!");
+                } else {
+                    throw new Error(`HTTP-Fehler: ${response.status}`);
+                }
             })
-            .catch((error) => {
+            .catch(error => {
                 console.error("Fehler beim Senden der E-Mail:", error);
                 alert("Fehler beim Senden des Bildes. Bitte überprüfe die Konfiguration.");
             });
