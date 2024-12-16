@@ -11,7 +11,6 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const upload = document.getElementById('upload');
 const sendButton = document.getElementById('send-button');
-const template = document.getElementById('template');
 let image = new Image();
 let scale = 1;
 let posX = 0, posY = 0;
@@ -22,14 +21,14 @@ let shape = 'octagon'; // Standard: Achteck
 // Buttons für die Auswahl der Form
 document.getElementById('rectangle-btn').addEventListener('click', () => {
     shape = 'rectangle'; // Rechteck
-    template.src = ''; // Keine Vorlage für Rechteck
     console.log("Rechteckige Form ausgewählt.");
+    draw(); // Canvas neu zeichnen, um den Rahmen anzuzeigen
 });
 
 document.getElementById('octagon-btn').addEventListener('click', () => {
     shape = 'octagon'; // Achteck
-    template.src = 'octagon.png'; // Achteck-Vorlage
     console.log("Achteckige Form ausgewählt.");
+    draw(); // Canvas neu zeichnen, um das Achteck darzustellen
 });
 
 // Hochladen eines Bildes
@@ -99,9 +98,6 @@ function draw() {
         ctx.lineTo(0, canvas.height * 0.25);
         ctx.closePath();
         ctx.clip(); // Clip im Achteck
-
-        // Achteck-Vorlage zeichnen
-        ctx.drawImage(template, 0, 0, canvas.width, canvas.height);
     }
 
     // Bild zeichnen
@@ -112,6 +108,14 @@ function draw() {
         ctx.drawImage(image, 0, 0);
     }
     ctx.restore();
+
+    // Rechteckigen Rahmen hinzufügen, wenn die Form 'rectangle' gewählt ist
+    if (shape === 'rectangle') {
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = 'black';
+        ctx.setLineDash([6, 4]); // Linienart für den Rechteck-Rahmen (gestrichelt)
+        ctx.strokeRect(0, 0, canvas.width, canvas.height); // Rechteck zeichnen
+    }
 
     ctx.restore();
 }
