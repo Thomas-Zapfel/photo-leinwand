@@ -52,25 +52,6 @@ upload.addEventListener("change", (e) => {
     }
 });
 
-
-// Verschieben des Bildes
-canvas.addEventListener("mousedown", (e) => {
-    dragging = true;
-    startX = e.offsetX - posX;
-    startY = e.offsetY - posY;
-});
-
-canvas.addEventListener("mousemove", (e) => {
-    if (dragging) {
-        posX = e.offsetX - startX;
-        posY = e.offsetY - startY;
-        draw();
-    }
-});
-
-canvas.addEventListener("mouseup", () => dragging = false);
-canvas.addEventListener("mouseleave", () => dragging = false);
-
 // Zoom- und Drag-Funktionalität
 canvas.addEventListener("wheel", (e) => {
     e.preventDefault();
@@ -89,38 +70,45 @@ canvas.addEventListener("wheel", (e) => {
     console.log(`Aktueller Zoom-Faktor: ${Math.round(scale * 100)}%`);
 });
 
+// Funktion zum Zeichnen des Bildes
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
 
-if (shape === "octagon") {
-        // Achteck-Clip definieren
+    // Achteck-Clip definieren, falls das Achteck ausgewählt wurde
+    if (shape === "octagon") {
         ctx.beginPath();
-        ctx.moveTo(canvas.width * 0.25, 0);
-        ctx.lineTo(canvas.width * 0.75, 0);
-        ctx.lineTo(canvas.width, canvas.height * 0.25);
-        ctx.lineTo(canvas.width, canvas.height * 0.75);
-        ctx.lineTo(canvas.width * 0.75, canvas.height);
-        ctx.lineTo(canvas.width * 0.25, canvas.height);
-        ctx.lineTo(0, canvas.height * 0.75);
-        ctx.lineTo(0, canvas.height * 0.25);
+        const offset = 30; // Anpassung für die Form
+        ctx.moveTo(canvas.width * 0.25 + offset, 0);
+        ctx.lineTo(canvas.width * 0.75 - offset, 0);
+        ctx.lineTo(canvas.width, canvas.height * 0.25 + offset);
+        ctx.lineTo(canvas.width, canvas.height * 0.75 - offset);
+        ctx.lineTo(canvas.width * 0.75 - offset, canvas.height);
+        ctx.lineTo(canvas.width * 0.25 + offset, canvas.height);
+        ctx.lineTo(0, canvas.height * 0.75 - offset);
+        ctx.lineTo(0, canvas.height * 0.25 + offset);
         ctx.closePath();
         ctx.clip(); // Clip im Achteck
     }
 
-    // Bild zeichnen
+    // Berechne Position und Skalierung basierend auf dem aktuellen Zoom und Bildgröße
     ctx.translate(posX, posY);
     ctx.scale(scale, scale);
+
+    // Bild zeichnen
     if (image) {
         ctx.drawImage(image, 0, 0);
     }
 
     ctx.restore();
 
-    // Rahmen
+    // Rahmen für Rechteck
+    if (shape === "rectangle") {
         ctx.strokeStyle = "#ccc";
         ctx.lineWidth = 2;
         ctx.strokeRect(0, 0, canvas.width, canvas.height);
+    }
 }
-
-
 
 // Validierung der Formulareingaben
 function validateForm() {
