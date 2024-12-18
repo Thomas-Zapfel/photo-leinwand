@@ -34,7 +34,6 @@ shapeInputs.forEach(input => {
 });
 
 // Hochladen eines Bildes
-// Hochladen eines Bildes
 upload.addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -42,9 +41,10 @@ upload.addEventListener("change", (e) => {
         reader.onload = (event) => {
             image.src = event.target.result;
             image.onload = () => {
-                // Berechne die Position, um das Bild zu zentrieren
+                // Berechne die Position, um das Bild zu zentrieren unter Berücksichtigung der Skalierung
                 posX = (canvas.width - image.width * scale) / 2; // Horizontal zentrieren
                 posY = (canvas.height - image.height * scale) / 2; // Vertikal zentrieren
+
                 draw(); // Bild und Canvas neu zeichnen
             };
         };
@@ -71,7 +71,7 @@ canvas.addEventListener("mousemove", (e) => {
 canvas.addEventListener("mouseup", () => dragging = false);
 canvas.addEventListener("mouseleave", () => dragging = false);
 
-// Zoom-Funktionalität per Mausrad
+// Zoom- und Drag-Funktionalität
 canvas.addEventListener("wheel", (e) => {
     e.preventDefault();
 
@@ -79,36 +79,27 @@ canvas.addEventListener("wheel", (e) => {
     scale += e.deltaY * -0.001;
 
     // Begrenzung des Zoom-Bereichs (Minimal: 10%, Maximal: 300%)
-    scale = Math.min(Math.max(0.1, scale), 30);
+    scale = Math.min(Math.max(0.1, scale), 3);
 
+    // Berechne die neue Position, um das Bild zentriert zu halten
+    posX = (canvas.width - image.width * scale) / 2;
+    posY = (canvas.height - image.height * scale) / 2;
+
+    draw(); // Bild neu zeichnen
     console.log(`Aktueller Zoom-Faktor: ${Math.round(scale * 100)}%`);
-    draw();
 });
 
 
-// Funktion zum Zeichnen des Canvas
+// Funktion zum Zeichnen des Bildes
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
 
-    if (shape === "octagon") {
-        // Achteck-Clip definieren
-        ctx.beginPath();
-        ctx.moveTo(canvas.width * 0.25, 0);
-        ctx.lineTo(canvas.width * 0.75, 0);
-        ctx.lineTo(canvas.width, canvas.height * 0.25);
-        ctx.lineTo(canvas.width, canvas.height * 0.75);
-        ctx.lineTo(canvas.width * 0.75, canvas.height);
-        ctx.lineTo(canvas.width * 0.25, canvas.height);
-        ctx.lineTo(0, canvas.height * 0.75);
-        ctx.lineTo(0, canvas.height * 0.25);
-        ctx.closePath();
-        ctx.clip(); // Clip im Achteck
-    }
-
-    // Bild zeichnen
+    // Berechne Position und Skalierung basierend auf dem aktuellen Zoom und Bildgröße
     ctx.translate(posX, posY);
     ctx.scale(scale, scale);
+
+    // Bild zeichnen
     if (image) {
         ctx.drawImage(image, 0, 0);
     }
