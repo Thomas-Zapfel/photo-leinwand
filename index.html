@@ -1,76 +1,62 @@
-/* styles.css */
-body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    margin: 0;
-    padding: 0;
-    color: #333;
-}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bild hochladen und bearbeiten</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Bild hochladen und bearbeiten</h1>
+    </header>
+    <main>
+        <section id="shape-container">
+            <h2>Form wählen</h2>
+            <label>
+                <input type="radio" name="shape" value="octagon" checked>
+                <span>Achteck</span>
+            </label>
+            <label>
+                <input type="radio" name="shape" value="rectangle">
+                <span>Rechteck</span>
+            </label>
+        </section>
 
-header, footer {
-    text-align: center;
-    padding: 1rem;
-    background: #f4f4f4;
-}
+        <section id="upload-container">
+            <label for="upload">Bild hochladen:</label>
+            <input type="file" id="upload" accept="image/*">
+        </section>
 
-main {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-}
+        <section id="canvas-container">
+            <canvas id="canvas" width="400" height="400"></canvas>
+        </section>
 
-section {
-    border: 1px solid #ddd;
-    padding: 1rem;
-    border-radius: 8px;
-    background: #fafafa;
-}
+        <section id="form-container">
+            <h2>Kontaktinformationen</h2>
+            <form id="user-form">
+                <label for="first-name">Vorname:</label>
+                <input type="text" id="first-name" placeholder="Vorname" required>
 
-label {
-    display: block;
-    margin-bottom: 0.5rem;
-}
+                <label for="last-name">Nachname:</label>
+                <input type="text" id="last-name" placeholder="Nachname" required>
 
-input, button {
-    width: 100%;
-    padding: 0.5rem;
-    margin-bottom: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-}
+                <label for="email">E-Mail-Adresse:</label>
+                <input type="email" id="email" placeholder="E-Mail-Adresse">
 
-input:focus, button:hover {
-    outline: none;
-    border-color: #007BFF;
-}
+                <label for="phone">Telefonnummer:</label>
+                <input type="tel" id="phone" placeholder="Telefonnummer">
 
-button {
-    background: #007BFF;
-    color: white;
-    font-size: 1rem;
-    cursor: pointer;
-}
+                <button type="button" id="send-button">Bild senden</button>
+            </form>
+        </section>
 
-button:disabled {
-    background: #ddd;
-    cursor: not-allowed;
-}
-
-#loading-indicator {
-    display: none;
-    text-align: center;
-    font-size: 1.2rem;
-    color: #007BFF;
-}
-
-/* Mobile Ansicht */
-@media (max-width: 600px) {
-    canvas {
-        width: 100%;
-        height: auto;
-    }
-}
+        <div id="loading-indicator" aria-hidden="true">Bild wird gesendet...</div>
+    </main>
+    <footer>
+        <p>© 2024 Dein Unternehmen</p>
+    </footer>
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
