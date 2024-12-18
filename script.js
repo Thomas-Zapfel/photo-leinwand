@@ -90,29 +90,36 @@ canvas.addEventListener("wheel", (e) => {
 });
 
 
-// Funktion zum Zeichnen des Bildes
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.save();
-
-    // Berechne Position und Skalierung basierend auf dem aktuellen Zoom und Bildgröße
-    ctx.translate(posX, posY);
-    ctx.scale(scale, scale);
+if (shape === "octagon") {
+        // Achteck-Clip definieren
+        ctx.beginPath();
+        ctx.moveTo(canvas.width * 0.25, 0);
+        ctx.lineTo(canvas.width * 0.75, 0);
+        ctx.lineTo(canvas.width, canvas.height * 0.25);
+        ctx.lineTo(canvas.width, canvas.height * 0.75);
+        ctx.lineTo(canvas.width * 0.75, canvas.height);
+        ctx.lineTo(canvas.width * 0.25, canvas.height);
+        ctx.lineTo(0, canvas.height * 0.75);
+        ctx.lineTo(0, canvas.height * 0.25);
+        ctx.closePath();
+        ctx.clip(); // Clip im Achteck
+    }
 
     // Bild zeichnen
+    ctx.translate(posX, posY);
+    ctx.scale(scale, scale);
     if (image) {
         ctx.drawImage(image, 0, 0);
     }
 
     ctx.restore();
 
-    // Rahmen für Rechteck
-    if (shape === "rectangle") {
+    // Rahmen
         ctx.strokeStyle = "#ccc";
         ctx.lineWidth = 2;
         ctx.strokeRect(0, 0, canvas.width, canvas.height);
-    }
 }
+
 
 
 // Validierung der Formulareingaben
