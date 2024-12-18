@@ -155,7 +155,7 @@ function validateForm() {
     return true;
 }
 
-// Bild senden
+// Bild senden mit adaptiver Qualitätsreduktion
 sendButton.addEventListener("click", () => {
     if (!image.src) {
         alert("Bitte lade ein Bild hoch, bevor du es sendest.");
@@ -166,38 +166,56 @@ sendButton.addEventListener("click", () => {
         return; // Abbrechen, wenn die Validierung fehlschlägt
     }
 
-    const dataUrl = canvas.toDataURL("image/jpeg", 0.7); // Reduziert die Qualität des Bildes
+    // Startqualität für das Bild
+    let quality = 1.0; // 100%
+    const minQuality = 0.1; // Minimale Qualität (10%)
 
-    fetch("https://api.emailjs.com/api/v1.0/email/send", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            service_id: "service_photoLeinwand",
-            template_id: "template_photoLeinwand",
-            user_id: "hIRsZkp8LV1lJyjLg",
-            template_params: {
-                first_name: firstNameInput.value.trim() || "", // Optional
-                last_name: lastNameInput.value.trim() || "", // Optional
-                email: emailInput.value.trim(),
-                phone: phoneInput.value.trim(),
-                attachment: dataUrl,
+    function sendImage() {
+        const dataUrl = canvas.toDataURL("image/jpeg", quality);
+
+        fetch("https://api.emailjs.com/api/v1.0/email/send", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
             },
-        }),
-    })
-        .then(response => {
-            if (response.ok) {
-                alert("Bild erfolgreich gesendet!");
-            } else {
-                throw new Error(`HTTP-Fehler: ${response.status}`);
-            }
+            body: JSON.stringify({
+                service_id: "service_photoLeinwand",
+                template_id: "template_photoLeinwand",
+                user_id: "hIRsZkp8LV1lJyjLg",
+                template_params: {
+                    first_name: firstNameInput.value.trim() || "", // Optional
+                    last_name: lastNameInput.value.trim() || "", // Optional
+                    email: emailInput.value.trim(),
+                    phone: phoneInput.value.trim(),
+                    attachment: dataUrl,
+                },
+            }),
         })
-        .catch(error => {
-            console.error("Fehler beim Senden der E-Mail:", error);
-            alert("Fehler beim Senden des Bildes. Bitte überprüfe die Konfiguration.");
-        });
+            .then(response => {
+                if (response.ok) {
+                    alert("Bild erfolgreich gesendet!");
+                } else {
+                    throw new Error(`HTTP-Fehler: ${response.status}`);
+                }
+            })
+            .catch(error => {
+                console.error("Fehler beim Senden der E-Mail:", error);
+
+                if (quality > minQuality) {
+                    // Qualität reduzieren und erneut versuchen
+                    quality -= 0.1;
+                    quality = Math.max(quality, minQuality); // Sicherstellen, dass Qualität nicht unter minQuality fällt
+                    console.log(`Qualität auf ${Math.round(quality * 100)}% reduziert, erneuter Versuch...`);
+                    sendImage();
+                } else {
+                    alert("Fehler beim Senden des Bildes. Bitte überprüfe die Konfiguration.");
+                }
+            });
+    }
+
+    sendImage(); // Erste Übertragung starten
 });
+
 
 // Reset-Button hinzufügen (optional)
 const resetButton = document.createElement("button");
