@@ -1,50 +1,76 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bild bearbeiten und senden</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <h1>Bild hochladen und bearbeiten</h1>
-   <div id="shape-container">
-    <label>
-        <input type="radio" name="shape" value="octagon" checked>
-        Achteck
-    </label>
-    <label>
-        <input type="radio" name="shape" value="rectangle">
-        Rechteck
-    </label>
-</div>
+/* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
 
-<div id="upload-container">
-    <label for="upload">Bild hochladen:</label>
-    <input type="file" id="upload" accept="image/*">
-</div>
+header, footer {
+    text-align: center;
+    padding: 1rem;
+    background: #f4f4f4;
+}
 
-<div id="canvas-container">
-    <canvas id="canvas" width="400" height="400"></canvas>
-</div>
+main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
 
-<div id="form-container">
-    <label for="first-name">Vorname:</label>
-    <input type="text" id="first-name" placeholder="Vorname" required>
+section {
+    border: 1px solid #ddd;
+    padding: 1rem;
+    border-radius: 8px;
+    background: #fafafa;
+}
 
-    <label for="last-name">Nachname:</label>
-    <input type="text" id="last-name" placeholder="Nachname" required>
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
 
-    <label for="email">E-Mail-Adresse:</label>
-    <input type="email" id="email" placeholder="E-Mail-Adresse">
+input, button {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
 
-    <label for="phone">Telefonnummer:</label>
-    <input type="tel" id="phone" placeholder="Telefonnummer">
+input:focus, button:hover {
+    outline: none;
+    border-color: #007BFF;
+}
 
-    <button id="send-button">Bild senden</button>
-</div>
-    <canvas id="canvas" width="400" height="400"></canvas>
-    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
-    <script src="script.js"></script>
-</body>
-</html>
+button {
+    background: #007BFF;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+button:disabled {
+    background: #ddd;
+    cursor: not-allowed;
+}
+
+#loading-indicator {
+    display: none;
+    text-align: center;
+    font-size: 1.2rem;
+    color: #007BFF;
+}
+
+/* Mobile Ansicht */
+@media (max-width: 600px) {
+    canvas {
+        width: 100%;
+        height: auto;
+    }
+}
