@@ -34,6 +34,7 @@ shapeInputs.forEach(input => {
 });
 
 // Hochladen eines Bildes
+// Hochladen eines Bildes
 upload.addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -41,15 +42,16 @@ upload.addEventListener("change", (e) => {
         reader.onload = (event) => {
             image.src = event.target.result;
             image.onload = () => {
-                scale = 1; // Standard-Zoom zurücksetzen
-                posX = 50;  // Position zurücksetzen
-                posY = 50;
-                draw();
+                // Berechne die Position, um das Bild zu zentrieren
+                posX = (canvas.width - image.width * scale) / 2; // Horizontal zentrieren
+                posY = (canvas.height - image.height * scale) / 2; // Vertikal zentrieren
+                draw(); // Bild und Canvas neu zeichnen
             };
         };
         reader.readAsDataURL(file);
     }
 });
+
 
 // Verschieben des Bildes
 canvas.addEventListener("mousedown", (e) => {
@@ -86,11 +88,7 @@ canvas.addEventListener("wheel", (e) => {
 
 // Funktion zum Zeichnen des Canvas
 function draw() {
-    // Canvas leeren und Hintergrund setzen
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#f0f0f0"; // Hellgrauer Hintergrund
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
     ctx.save();
 
     if (shape === "octagon") {
@@ -124,6 +122,7 @@ function draw() {
         ctx.strokeRect(0, 0, canvas.width, canvas.height);
     }
 }
+
 
 // Validierung der Formulareingaben
 function validateForm() {
