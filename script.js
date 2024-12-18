@@ -155,7 +155,7 @@ function validateForm() {
     return true;
 }
 
-// Bild senden mit adaptiver Qualitätsreduktion
+// Bild senden mit adaptiver Qualitätsreduktion und Logging
 sendButton.addEventListener("click", () => {
     if (!image.src) {
         alert("Bitte lade ein Bild hoch, bevor du es sendest.");
@@ -169,9 +169,13 @@ sendButton.addEventListener("click", () => {
     // Startqualität für das Bild
     let quality = 1.0; // 100%
     const minQuality = 0.1; // Minimale Qualität (10%)
+    let attempts = 0; // Zähler für die Anzahl der Versuche
 
     function sendImage() {
+        attempts++;
         const dataUrl = canvas.toDataURL("image/jpeg", quality);
+
+        console.log(`Versuch #${attempts}: Qualität = ${Math.round(quality * 100)}%`);
 
         fetch("https://api.emailjs.com/api/v1.0/email/send", {
             method: "POST",
@@ -193,22 +197,23 @@ sendButton.addEventListener("click", () => {
         })
             .then(response => {
                 if (response.ok) {
+                    console.log(`Erfolg bei Versuch #${attempts} mit Qualität ${Math.round(quality * 100)}%.`);
                     alert("Bild erfolgreich gesendet!");
                 } else {
                     throw new Error(`HTTP-Fehler: ${response.status}`);
                 }
             })
             .catch(error => {
-                console.error("Fehler beim Senden der E-Mail:", error);
+                console.error(`Fehler beim Senden (Versuch #${attempts}):`, error);
 
                 if (quality > minQuality) {
                     // Qualität reduzieren und erneut versuchen
                     quality -= 0.1;
                     quality = Math.max(quality, minQuality); // Sicherstellen, dass Qualität nicht unter minQuality fällt
-                    console.log(`Qualität auf ${Math.round(quality * 100)}% reduziert, erneuter Versuch...`);
-                    sendImage();
+                    sendImage(); // Erneuter Versuch
                 } else {
                     alert("Fehler beim Senden des Bildes. Bitte überprüfe die Konfiguration.");
+                    console.error("Maximale Versuche erreicht. Abbruch.");
                 }
             });
     }
