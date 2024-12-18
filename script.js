@@ -40,13 +40,18 @@ upload.addEventListener("change", (e) => {
         const reader = new FileReader();
         reader.onload = (event) => {
             image.src = event.target.result;
-            image.onload = () => draw(); // Bild laden und zeichnen
+            image.onload = () => {
+                scale = 1; // Standard-Zoom zurücksetzen
+                posX = 0;  // Position zurücksetzen
+                posY = 0;
+                draw();
+            };
         };
         reader.readAsDataURL(file);
     }
 });
 
-// Zoom- und Drag-Funktionalität
+// Verschieben des Bildes
 canvas.addEventListener("mousedown", (e) => {
     dragging = true;
     startX = e.offsetX - posX;
@@ -55,47 +60,41 @@ canvas.addEventListener("mousedown", (e) => {
 
 canvas.addEventListener("mousemove", (e) => {
     if (dragging) {
-        const newX = e.offsetX - startX;
-        const newY = e.offsetY - startY;
-
-        // Begrenzungen
-        const maxOffsetX = (image.width * scale - canvas.width) / 2;
-        const maxOffsetY = (image.height * scale - canvas.height) / 2;
-
-        posX = Math.min(Math.max(newX, -maxOffsetX), maxOffsetX);
-        posY = Math.min(Math.max(newY, -maxOffsetY), maxOffsetY);
-
+        posX = e.offsetX - startX;
+        posY = e.offsetY - startY;
         draw();
     }
 });
 
-
 canvas.addEventListener("mouseup", () => dragging = false);
 canvas.addEventListener("mouseleave", () => dragging = false);
 
+// Zoom-Funktionalität per Mausrad
 canvas.addEventListener("wheel", (e) => {
     e.preventDefault();
 
-    const mouseX = e.offsetX - posX;
-    const mouseY = e.offsetY - posY;
+    const zoomFactor = 0.1; // Zoom-Stärke
+    const mouseX = e.offsetX;
+    const mouseY = e.offsetY;
 
-    const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1; // Verkleinern oder Vergrößern
-    const newScale = Math.min(Math.max(0.5, scale * zoomFactor), 3);
+    const prevScale = scale;
+    scale += e.deltaY > 0 ? -zoomFactor : zoomFactor;
+    scale = Math.min(Math.max(0.5, scale), 3); // Begrenzung zwischen 50 % und 300 %
 
-    // Neupositionierung, um zentriert zu zoomen
-    posX -= mouseX * (newScale - scale);
-    posY -= mouseY * (newScale - scale);
+    // Korrektur der Position, um an der Maus zu zoomen
+    posX -= (mouseX - posX) * (scale / prevScale - 1);
+    posY -= (mouseY - posY) * (scale / prevScale - 1);
 
-    scale = newScale;
     draw();
 });
 
-
+// Funktion zum Zeichnen des Canvas
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
 
     if (shape === "octagon") {
+        // Achteck-Clip definieren
         ctx.beginPath();
         ctx.moveTo(canvas.width * 0.25, 0);
         ctx.lineTo(canvas.width * 0.75, 0);
@@ -109,19 +108,20 @@ function draw() {
         ctx.clip();
     }
 
-    // Berechnung der Startposition für Zentrierung
+    // Bild zentrieren, falls kleiner als Canvas
     const offsetX = (canvas.width - image.width * scale) / 2;
     const offsetY = (canvas.height - image.height * scale) / 2;
 
     ctx.translate(posX + offsetX, posY + offsetY);
     ctx.scale(scale, scale);
 
-    if (image) {
-        ctx.drawImage(image, 0, 0);
+    if (image.src) {
+        ctx.drawImage(image, 0, 0, image.width, image.height);
     }
 
     ctx.restore();
 
+    // Rahmen für Rechteck
     if (shape === "rectangle") {
         ctx.strokeStyle = "#ccc";
         ctx.lineWidth = 2;
@@ -190,7 +190,7 @@ sendButton.addEventListener("click", () => {
             if (response.ok) {
                 alert("Bild erfolgreich gesendet!");
             } else {
-                throw new Error(HTTP-Fehler: ${response.status});
+                throw new Error(`HTTP-Fehler: ${response.status}`);
             }
         })
         .catch(error => {
@@ -198,3 +198,14 @@ sendButton.addEventListener("click", () => {
             alert("Fehler beim Senden des Bildes. Bitte überprüfe die Konfiguration.");
         });
 });
+
+// Reset-Button hinzufügen (optional)
+const resetButton = document.createElement("button");
+resetButton.textContent = "Zurücksetzen";
+resetButton.addEventListener("click", () => {
+    scale = 1;
+    posX = 0;
+    posY = 0;
+    draw();
+});
+document.body.appendChild(resetButton);
