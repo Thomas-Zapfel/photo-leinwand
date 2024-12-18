@@ -42,8 +42,8 @@ upload.addEventListener("change", (e) => {
             image.src = event.target.result;
             image.onload = () => {
                 scale = 1; // Standard-Zoom zurücksetzen
-                posX = 0;  // Position zurücksetzen
-                posY = 0;
+                posX = 50;  // Position zurücksetzen
+                posY = 50;
                 draw();
             };
         };
@@ -77,7 +77,7 @@ canvas.addEventListener("wheel", (e) => {
     scale += e.deltaY * -0.001;
 
     // Begrenzung des Zoom-Bereichs (Minimal: 10%, Maximal: 300%)
-    scale = Math.min(Math.max(0.01, scale), 30);
+    scale = Math.min(Math.max(0.1, scale), 30);
 
     console.log(`Aktueller Zoom-Faktor: ${Math.round(scale * 100)}%`);
     draw();
