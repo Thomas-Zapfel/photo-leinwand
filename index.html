@@ -3,59 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bild hochladen und bearbeiten</title>
+    <title>Bild bearbeiten und senden</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>Bild hochladen und bearbeiten</h1>
-    </header>
-    <main>
-        <section id="shape-container">
-            <h2>Form wählen</h2>
-            <label>
-                <input type="radio" name="shape" value="octagon" checked>
-                <span>Achteck</span>
-            </label>
-            <label>
-                <input type="radio" name="shape" value="rectangle">
-                <span>Rechteck</span>
-            </label>
-        </section>
+    <h1>Bild hochladen und bearbeiten</h1>
+   <div id="shape-container">
+    <label>
+        <input type="radio" name="shape" value="octagon" checked>
+        Achteck
+    </label>
+    <label>
+        <input type="radio" name="shape" value="rectangle">
+        Rechteck
+    </label>
+</div>
 
-        <section id="upload-container">
-            <label for="upload">Bild hochladen:</label>
-            <input type="file" id="upload" accept="image/*">
-        </section>
+<div id="upload-container">
+    <label for="upload">Bild hochladen:</label>
+    <input type="file" id="upload" accept="image/*">
+</div>
 
-        <section id="canvas-container">
-            <canvas id="canvas" width="400" height="400"></canvas>
-        </section>
+<div id="canvas-container">
+    <canvas id="canvas" width="400" height="400"></canvas>
+</div>
 
-        <section id="form-container">
-            <h2>Kontaktinformationen</h2>
-            <form id="user-form">
-                <label for="first-name">Vorname:</label>
-                <input type="text" id="first-name" placeholder="Vorname" required>
+<div id="form-container">
+    <label for="first-name">Vorname:</label>
+    <input type="text" id="first-name" placeholder="Vorname" required>
 
-                <label for="last-name">Nachname:</label>
-                <input type="text" id="last-name" placeholder="Nachname" required>
+    <label for="last-name">Nachname:</label>
+    <input type="text" id="last-name" placeholder="Nachname" required>
 
-                <label for="email">E-Mail-Adresse:</label>
-                <input type="email" id="email" placeholder="E-Mail-Adresse">
+    <label for="email">E-Mail-Adresse:</label>
+    <input type="email" id="email" placeholder="E-Mail-Adresse">
 
-                <label for="phone">Telefonnummer:</label>
-                <input type="tel" id="phone" placeholder="Telefonnummer">
+    <label for="phone">Telefonnummer:</label>
+    <input type="tel" id="phone" placeholder="Telefonnummer">
 
-                <button type="button" id="send-button">Bild senden</button>
-            </form>
-        </section>
-
-        <div id="loading-indicator" aria-hidden="true">Bild wird gesendet...</div>
-    </main>
-    <footer>
-        <p>© 2024 Dein Unternehmen</p>
-    </footer>
+    <button id="send-button">Bild senden</button>
+</div>
+    <canvas id="canvas" width="400" height="400"></canvas>
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <script src="script.js"></script>
 </body>
