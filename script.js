@@ -55,29 +55,47 @@ canvas.addEventListener("mousedown", (e) => {
 
 canvas.addEventListener("mousemove", (e) => {
     if (dragging) {
-        posX = e.offsetX - startX;
-        posY = e.offsetY - startY;
+        const newX = e.offsetX - startX;
+        const newY = e.offsetY - startY;
+
+        // Begrenzungen
+        const maxOffsetX = (image.width * scale - canvas.width) / 2;
+        const maxOffsetY = (image.height * scale - canvas.height) / 2;
+
+        posX = Math.min(Math.max(newX, -maxOffsetX), maxOffsetX);
+        posY = Math.min(Math.max(newY, -maxOffsetY), maxOffsetY);
+
         draw();
     }
 });
+
 
 canvas.addEventListener("mouseup", () => dragging = false);
 canvas.addEventListener("mouseleave", () => dragging = false);
 
 canvas.addEventListener("wheel", (e) => {
     e.preventDefault();
-    scale += e.deltaY * -0.001;
-    scale = Math.min(Math.max(0.5, scale), 3); // Limit Zoom
+
+    const mouseX = e.offsetX - posX;
+    const mouseY = e.offsetY - posY;
+
+    const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1; // Verkleinern oder Vergrößern
+    const newScale = Math.min(Math.max(0.5, scale * zoomFactor), 3);
+
+    // Neupositionierung, um zentriert zu zoomen
+    posX -= mouseX * (newScale - scale);
+    posY -= mouseY * (newScale - scale);
+
+    scale = newScale;
     draw();
 });
 
-// Funktion zum Zeichnen des Bildes
+
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
 
     if (shape === "octagon") {
-        // Achteck-Clip definieren
         ctx.beginPath();
         ctx.moveTo(canvas.width * 0.25, 0);
         ctx.lineTo(canvas.width * 0.75, 0);
@@ -88,19 +106,22 @@ function draw() {
         ctx.lineTo(0, canvas.height * 0.75);
         ctx.lineTo(0, canvas.height * 0.25);
         ctx.closePath();
-        ctx.clip(); // Clip im Achteck
+        ctx.clip();
     }
 
-    // Bild zeichnen
-    ctx.translate(posX, posY);
+    // Berechnung der Startposition für Zentrierung
+    const offsetX = (canvas.width - image.width * scale) / 2;
+    const offsetY = (canvas.height - image.height * scale) / 2;
+
+    ctx.translate(posX + offsetX, posY + offsetY);
     ctx.scale(scale, scale);
+
     if (image) {
         ctx.drawImage(image, 0, 0);
     }
 
     ctx.restore();
 
-    // Rahmen für Rechteck
     if (shape === "rectangle") {
         ctx.strokeStyle = "#ccc";
         ctx.lineWidth = 2;
