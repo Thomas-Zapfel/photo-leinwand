@@ -73,24 +73,24 @@ canvas.addEventListener("mouseleave", () => dragging = false);
 canvas.addEventListener("wheel", (e) => {
     e.preventDefault();
 
-    const zoomFactor = 0.1; // Zoom-Stärke
-    const mouseX = e.offsetX;
-    const mouseY = e.offsetY;
+    // Zoom-Faktor anpassen
+    scale += e.deltaY * -0.001;
 
-    const prevScale = scale;
-    scale += e.deltaY > 0 ? -zoomFactor : zoomFactor;
-    scale = Math.min(Math.max(0.5, scale), 3); // Begrenzung zwischen 50 % und 300 %
+    // Begrenzung des Zoom-Bereichs (Minimal: 10%, Maximal: 300%)
+    scale = Math.min(Math.max(0.1, scale), 3);
 
-    // Korrektur der Position, um an der Maus zu zoomen
-    posX -= (mouseX - posX) * (scale / prevScale - 1);
-    posY -= (mouseY - posY) * (scale / prevScale - 1);
-
+    console.log(`Aktueller Zoom-Faktor: ${Math.round(scale * 100)}%`);
     draw();
 });
 
+
 // Funktion zum Zeichnen des Canvas
 function draw() {
+    // Canvas leeren und Hintergrund setzen
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#f0f0f0"; // Hellgrauer Hintergrund
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
     ctx.save();
 
     if (shape === "octagon") {
@@ -105,18 +105,14 @@ function draw() {
         ctx.lineTo(0, canvas.height * 0.75);
         ctx.lineTo(0, canvas.height * 0.25);
         ctx.closePath();
-        ctx.clip();
+        ctx.clip(); // Clip im Achteck
     }
 
-    // Bild zentrieren, falls kleiner als Canvas
-    const offsetX = (canvas.width - image.width * scale) / 2;
-    const offsetY = (canvas.height - image.height * scale) / 2;
-
-    ctx.translate(posX + offsetX, posY + offsetY);
+    // Bild zeichnen
+    ctx.translate(posX, posY);
     ctx.scale(scale, scale);
-
-    if (image.src) {
-        ctx.drawImage(image, 0, 0, image.width, image.height);
+    if (image) {
+        ctx.drawImage(image, 0, 0);
     }
 
     ctx.restore();
