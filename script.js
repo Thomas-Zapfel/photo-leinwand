@@ -70,6 +70,25 @@ canvas.addEventListener("wheel", (e) => {
     console.log(`Aktueller Zoom-Faktor: ${Math.round(scale * 100)}%`);
 });
 
+// Drag-Funktionalität (Verschieben des Bildes)
+canvas.addEventListener("mousedown", (e) => {
+    startX = e.offsetX - posX;
+    startY = e.offsetY - posY;
+    dragging = true;
+});
+
+canvas.addEventListener("mousemove", (e) => {
+    if (dragging) {
+        posX = e.offsetX - startX;
+        posY = e.offsetY - startY;
+        draw(); // Bild neu zeichnen
+    }
+});
+
+canvas.addEventListener("mouseup", () => {
+    dragging = false;
+});
+
 // Funktion zum Zeichnen des Bildes
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
