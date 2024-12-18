@@ -79,14 +79,18 @@ function draw() {
     if (shape === "octagon") {
         ctx.beginPath();
         const offset = 30; // Anpassung für die Form
-        ctx.moveTo(canvas.width * 0.25 + offset, 0);
-        ctx.lineTo(canvas.width * 0.75 - offset, 0);
-        ctx.lineTo(canvas.width, canvas.height * 0.25 + offset);
-        ctx.lineTo(canvas.width, canvas.height * 0.75 - offset);
-        ctx.lineTo(canvas.width * 0.75 - offset, canvas.height);
-        ctx.lineTo(canvas.width * 0.25 + offset, canvas.height);
-        ctx.lineTo(0, canvas.height * 0.75 - offset);
-        ctx.lineTo(0, canvas.height * 0.25 + offset);
+        const width = canvas.width;
+        const height = canvas.height;
+
+        // Achteck definieren (Ecken abgerundet)
+        ctx.moveTo(width * 0.25 + offset, 0);
+        ctx.lineTo(width * 0.75 - offset, 0);
+        ctx.lineTo(width, height * 0.25 + offset);
+        ctx.lineTo(width, height * 0.75 - offset);
+        ctx.lineTo(width * 0.75 - offset, height);
+        ctx.lineTo(width * 0.25 + offset, height);
+        ctx.lineTo(0, height * 0.75 - offset);
+        ctx.lineTo(0, height * 0.25 + offset);
         ctx.closePath();
         ctx.clip(); // Clip im Achteck
     }
@@ -201,7 +205,6 @@ sendButton.addEventListener("click", () => {
 
     sendImage(); // Erste Übertragung starten
 });
-
 
 // Reset-Button hinzufügen (optional)
 const resetButton = document.createElement("button");
