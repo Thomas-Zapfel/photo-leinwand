@@ -38,24 +38,28 @@
         <div class="card shadow-sm">
             <div class="card-body">
                 <h2 class="card-title h5 mb-3">Formular</h2>
+               <div id="form-container" class="mt-4">
                 <form>
                     <div class="mb-3">
                         <label for="first-name" class="form-label">Vorname:</label>
-                        <input type="text" class="form-control" id="first-name" placeholder="Vorname" required>
+                        <input type="text" id="first-name" class="form-control" placeholder="Vorname" required>
                     </div>
                     <div class="mb-3">
                         <label for="last-name" class="form-label">Nachname:</label>
-                        <input type="text" class="form-control" id="last-name" placeholder="Nachname" required>
+                        <input type="text" id="last-name" class="form-control" placeholder="Nachname" required>
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">E-Mail-Adresse:</label>
-                        <input type="email" class="form-control" id="email" placeholder="E-Mail-Adresse">
+                        <input type="email" id="email" class="form-control" placeholder="E-Mail-Adresse">
                     </div>
                     <div class="mb-3">
                         <label for="phone" class="form-label">Telefonnummer:</label>
-                        <input type="tel" class="form-control" id="phone" placeholder="Telefonnummer">
+                        <input type="tel" id="phone" class="form-control" placeholder="Telefonnummer">
                     </div>
-                    <button type="button" id="send-button" class="btn btn-primary w-100">Bild senden</button>
+                    <div class="d-flex gap-3">
+                        <button type="button" id="send-button" class="btn btn-primary w-100">Bild senden</button>
+                        <button type="button" id="reset-button" class="btn btn-secondary w-100">Zurücksetzen</button>
+                    </div>
                 </form>
             </div>
         </div>
