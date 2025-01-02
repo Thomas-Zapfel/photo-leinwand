@@ -225,13 +225,25 @@ sendButton.addEventListener("click", () => {
     sendImage(); // Erste Übertragung starten
 });
 
-// Reset-Button hinzufügen (optional)
-const resetButton = document.createElement("button");
-resetButton.textContent = "Zurücksetzen";
+// Reset-Button-Funktionalität
+const resetButton = document.getElementById("reset-button");
 resetButton.addEventListener("click", () => {
+    // Bild zurücksetzen
     scale = 1;
     posX = 0;
     posY = 0;
-    draw();
+    shape = "octagon"; // Standardform zurücksetzen
+    shapeInputs[0].checked = true; // Achteck auswählen
+    upload.value = ""; // Dateiupload zurücksetzen
+    image.src = ""; // Bild entfernen
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvas leeren
+
+    // Formularfelder zurücksetzen
+    firstNameInput.value = "";
+    lastNameInput.value = "";
+    emailInput.value = "";
+    phoneInput.value = "";
+
+    console.log("Reset durchgeführt.");
 });
 document.body.appendChild(resetButton);
