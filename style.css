@@ -76,7 +76,7 @@ button:disabled {
 }
 body {
     font-family: 'Roboto', sans-serif;
-    background-color: #e6eaef;
+    background-color: #e6eaef !important;
     color: #3d4a5d;
 }
 
