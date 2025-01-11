@@ -5,8 +5,10 @@ const imageFolder = './images';
 const images = [
     'Flaschenöffner.png',
     'Flaschenöffner Jugend.png',
-    'image3.jpg',
-    'image4.jpg',
+    'Aschenbecher HD.png',
+    'LKW Michi 2.png',
+    'Stamperl.png',
+    'Tisch Peter.png',
 ];
 
 // Galerie-Container abrufen
