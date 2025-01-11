@@ -3,8 +3,8 @@ const imageFolder = './images';
 
 // Bilddateinamen (kann erweitert werden, falls der Ordner nicht dynamisch durch API geladen werden kann)
 const images = [
-    'image1.jpg',
-    'image2.jpg',
+    'Flaschenöffner.jpg',
+    'Flaschenöffner Jugend.jpg',
     'image3.jpg',
     'image4.jpg',
 ];
